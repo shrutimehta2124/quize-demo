@@ -174,7 +174,7 @@ function handleAnswer(selectedOption) {
     });
 
     const selectedButton = Array.from(options).find(option => option.textContent === selectedOption);
-    selectedButton.style.backgroundColor = '#555'; // Darken the clicked option
+    selectedButton.style.backgroundColor = '#708090'; // Darken the clicked option
 
     document.getElementById("next-button").style.display = "inline-block";
     document.getElementById("next-button").disabled = false;
