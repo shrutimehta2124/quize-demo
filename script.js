@@ -123,23 +123,17 @@ function startQuiz() {
 
 // Load Question
 function loadQuestion() {
-    // Update the current question number
     document.getElementById("current-question-number").textContent = currentQuestionIndex + 1;
-
-    // Update the total questions count (this is fixed, so we can just update once)
     if (currentQuestionIndex === 0) {
         document.getElementById("total-questions-number").textContent = questions.length;
     }
 
-    // Reset and display timer before showing the question
     document.getElementById("timer-seconds").textContent = timeRemaining;
-    startTimer(); // Start the countdown
+    startTimer();
 
-    // Load question
     const currentQuestion = questions[currentQuestionIndex];
     document.getElementById("question").textContent = currentQuestion.question;
 
-    // Display answer options
     const answerOptions = document.getElementById("answer-options");
     answerOptions.innerHTML = '';
 
@@ -164,8 +158,8 @@ function startTimer() {
 
         if (timeRemaining <= 0) {
             clearInterval(timer);
-            handleSkip(); // Call handleSkip when time is up
-            moveToNextQuestion(); // Automatically move to next question after time is over
+            handleSkip();
+            moveToNextQuestion();
         }
     }, 1000);
 }
@@ -173,6 +167,15 @@ function startTimer() {
 // Handle Answer Selection
 function handleAnswer(selectedOption) {
     clearInterval(timer);
+
+    const options = document.querySelectorAll('#answer-options button');
+    options.forEach(option => {
+        option.style.backgroundColor = ''; // Reset all options to default color
+    });
+
+    const selectedButton = Array.from(options).find(option => option.textContent === selectedOption);
+    selectedButton.style.backgroundColor = '#555'; // Darken the clicked option
+
     document.getElementById("next-button").style.display = "inline-block";
     document.getElementById("next-button").disabled = false;
 
@@ -214,14 +217,38 @@ function moveToNextQuestion() {
     if (currentQuestionIndex < questions.length) {
         loadQuestion();
     } else {
-        showSubmitPage();
+        document.getElementById("next-button").textContent = 'Submit Quiz';
     }
 }
 
-// Move to Submit Page
+// Submit Quiz and Show Score
 document.getElementById("next-button").onclick = function () {
-    moveToNextQuestion();
+    if (currentQuestionIndex === questions.length) {
+        showSubmitPage();
+    } else {
+        moveToNextQuestion();
+    }
 };
+
+// Show Score Page
+function showSubmitPage() {
+    document.getElementById("quiz-container").style.display = "none";
+    document.getElementById("submit-container").style.display = "block";
+    document.getElementById("final-score").textContent = score;
+    document.getElementById("skipped-count").textContent = skipped;
+    document.getElementById("total-questions").textContent = questions.length;
+
+    let userAnswersHtml = '';
+    userResponses.forEach((response, index) => {
+        userAnswersHtml += `
+            <div class="answer">
+                <p><strong>Question ${index + 1}:</strong> ${response.question}</p>
+                <p>Your Answer: ${response.selected}</p>
+                <p>Status: ${response.status === "correct" ? "Correct" : (response.status === "skipped" ? "Skipped" : "Wrong")}</p>
+            </div>`;
+    });
+    document.getElementById("user-answers").innerHTML = userAnswersHtml;
+}
 
 // Show Submit Page
 function showSubmitPage() {
