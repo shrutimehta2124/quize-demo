@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="responsive.css">
+</head>
+<body>
+    <!-- Welcome Page -->
+    <div class="welcome-container" id="welcome-container">
+        <h1>Welcome to the Quiz!</h1>
+        <p>Test your HTML, CSS, and JavaScript knowledge with exciting and challenging questions!</p>
+        <p style="font-size: 1.2rem; margin-bottom: 10px;"><strong>Total Questions:</strong> 20</p>
+<p style="font-size: 1.2rem; margin-bottom: 20px;"><strong>Time per Question:</strong> 10 seconds</p>
+
+        <button id="start-quiz-button">Start Quiz</button>
+    </div>
+
+    <!-- Quiz Container 
+    <div class="quiz-container" id="quiz-container" style="display:none;">
+        <div id="timer">Time remaining: <span id="timer-seconds">10</span> seconds</div>
+        <div id="question-container">
+            <h2 id="question">Question will appear here</h2>
+            <div id="answer-options"></div>
+        </div>
+        <div id="question-number" style="font-size: 1.2rem; margin-bottom: 10px;">
+            Question: <span id="current-question-number">1</span> / <span id="total-questions-number">20</span>
+        </div>
+        
+        <button id="next-button" style="display:none;">Next Question</button>
+        <button id="submit-button" style="display:none;">Submit Quiz</button>
+    </div>-->
+    <div class="quiz-container" id="quiz-container" style="display:none;">
+        <!-- Timer and Question Number on the Same Line -->
+        <div id="timer-container" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <!-- Timer -->
+            <div id="timer" style="font-size: 1.5rem; color: #4CAF50;">Time remaining: <span id="timer-seconds">10</span> seconds</div>
+            
+            <!-- Question Number -->
+            <div id="question-number" style="font-size: 1.2rem; color: #333;">
+                Question: <span id="current-question-number">1</span> / <span id="total-questions-number">20</span>
+            </div>
+        </div>
+    
+        <!-- Question and Answer Options -->
+        <div id="question-container">
+            <h2 id="question">Question will appear here</h2>
+            <div id="answer-options"></div>
+        </div>
+    
+        <!-- Buttons -->
+        <button id="next-button" style="display:none;">Next Question</button>
+        <button id="submit-button" style="display:none;">Submit Quiz</button>
+    </div>
+    
+
+    <!-- Submit Page -->
+    <div id="submit-container" style="display:none;">
+        <h2>🎉 Quiz Successfully Submitted! 🎉</h2>
+        <button id="view-score-button">View Score</button>
+        <button id="view-response-button">View Responses</button>
+        <button id="restart-quiz-button">Restart Quiz</button>
+    </div>
+    <div id="score-container" style="display:none;">
+        <h2>Your Score</h2>
+        <p id="score"></p>
+        <button id="back-to-submit-from-score">Back</button>
+    </div>
+
+    <!-- Response Page -->
+    <!--<div id="response-container" style="display:none;">
+        <h2>Your Responses</h2>
+        <div id="response-list"></div>
+        <button id="back-to-submit-from-response">Back</button>
+    </div>-->
+    <div id="response-container" style="display:none;">
+        <h2>Your Responses</h2>
+        <ul id="response-list"></ul> <!-- Changed to <ul> -->
+        <button id="back-to-submit-from-response">Back</button>
+    </div>
+    
+
+    <script src="script.js"></script>
+</body>
+</html>
