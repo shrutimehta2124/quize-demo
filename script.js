@@ -108,6 +108,14 @@ let timer;
 let timeRemaining = 10;
 let userResponses = [];
 
+// Fisher-Yates Shuffle Algorithm
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1)); // Random index
+        [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+    }
+}
+
 // Start Quiz
 document.getElementById("start-quiz-button").onclick = startQuiz;
 
@@ -118,6 +126,10 @@ function startQuiz() {
     score = 0;
     skipped = 0;
     userResponses = [];
+
+    // Shuffle questions every time the quiz starts
+    shuffleArray(questions);
+
     loadQuestion();
 }
 
