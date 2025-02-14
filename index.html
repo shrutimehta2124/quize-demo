@@ -6,6 +6,8 @@
     <title>Quiz</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="responsive.css">
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+
 </head>
 <body>
     <!-- Welcome Page -->
@@ -20,6 +22,12 @@
     <div id="sidebar">
         <ul id="question-list"></ul>
     </div>
+        <!-- Video container -->
+<div id="video-container">
+    <video id="videoElement" width="320" height="240" autoplay></video>
+    <p id="message"></p>
+    <button id="start">Start Camera</button>
+</div>
 
     <!-- Quiz Container 
     <div class="quiz-container" id="quiz-container" style="display:none;">

@@ -336,3 +336,14 @@ button:hover {
     color: red;
     text-decoration: line-through;
 }
+#camera-feed {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 150px;
+    height: 150px;
+    border-radius: 8px;
+    border: 2px solid #ccc;
+    background-color: black;
+    z-index: 1000;
+}

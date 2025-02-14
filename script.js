@@ -108,6 +108,7 @@ let timer;
 let timeRemaining = 10;
 let userResponses = [];
 let questionTimers = {}; // Store remaining time per question
+let stream; // To hold the camera stream
 
 // Fisher-Yates Shuffle Algorithm
 function shuffleArray(array) {
@@ -117,10 +118,61 @@ function shuffleArray(array) {
     }
 }
 
+// Function to start the camera
+function startCamera() {
+    navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then((userStream) => {
+            document.querySelector("#videoElement").srcObject = userStream;
+            stream = userStream; // Save the stream to stop later
+
+            document.querySelector("#start").style.display = "none"; // Hide the button after starting
+            document.querySelector("#start-quiz-button").disabled = false; // Enable Start Quiz button
+        })
+        .catch((error) => {
+            console.error("Camera access denied:", error);
+            document.querySelector("#message").innerText =
+                "Camera access denied. Please enable it in your browser settings.";
+        });
+}
+
+
+// Function to stop the camera
+function stopCamera() {
+    if (stream) {
+        let tracks = stream.getTracks();
+        tracks.forEach((track) => track.stop()); // Stop all tracks (video)
+        document.querySelector("#videoElement").srcObject = null; // Remove the video stream
+    }
+    document.querySelector("#start-quiz-button").disabled = true; // Disable Start Quiz button when camera stops
+}
+
+// Toggle start/stop on button click
+document.querySelector("#start").addEventListener("click", () => {
+    const buttonText = document.querySelector("#start").innerText;
+    if (buttonText === "Start Camera") {
+        startCamera(); // Start the camera
+    } else {
+        stopCamera(); // Stop the camera
+    }
+});
+// Ensure quiz doesn't start until camera is started
+document.getElementById("start-quiz-button").onclick = function() {
+    if (stream) {
+        startQuiz(); // Proceed with quiz if camera is active
+    } else {
+        alert("Please start the camera before starting the quiz!");
+    }
+};
 // Start Quiz
 document.getElementById("start-quiz-button").onclick = startQuiz;
 
 function startQuiz() {
+    if (!stream) {
+        alert("Please start the camera before starting the quiz!");
+        return;
+    }
+
     document.getElementById("welcome-container").style.display = "none";
     document.getElementById("quiz-container").style.display = "block";
     currentQuestionIndex = 0;
@@ -135,7 +187,6 @@ function startQuiz() {
     setupSidebar();
     loadQuestion();
 }
-
 // Load Question
 function loadQuestion() {
     document.getElementById("current-question-number").textContent = currentQuestionIndex + 1;
@@ -254,6 +305,7 @@ document.getElementById("next-button").onclick = function () {
     }
 };
 
+
 // Setup Sidebar
 function setupSidebar() {
     const sidebar = document.getElementById("question-list");
@@ -310,27 +362,15 @@ document.getElementById("view-score-button").onclick = function () {
     `;
 };
 
-// Show Submit Page
 function showSubmitPage() {
+    stopCamera(); // Stop the camera when the quiz is submitted
+
+    document.getElementById("video-container").style.display = "none"; // Hide camera
     document.getElementById("quiz-container").style.display = "none";
     document.getElementById("submit-container").style.display = "block";
+    
+    document.querySelector("#start").style.display = "none"; // Ensure start camera button stays hidden
 }
-
-// Show Score Page
-document.getElementById("view-score-button").onclick = function () {
-    document.getElementById("submit-container").style.display = "none";
-    document.getElementById("score-container").style.display = "block";
-   
-    const totalQuestions = questions.length;
-    const attemptedQuestions = totalQuestions - skipped;
-
-    document.getElementById("score").innerHTML =
-    `<p>Your Score: ${score} / ${totalQuestions}</p>
-        <p>Questions Attempted: ${attemptedQuestions}</p>
-        <p>Questions Skipped: ${skipped}</p>
-    `;
-};
-
 // Show Responses
 document.getElementById("view-response-button").onclick = function () {
     document.getElementById("submit-container").style.display = "none";
@@ -380,7 +420,6 @@ document.getElementById("view-response-button").onclick = function () {
     });
 };
 
-
 // Back to Submit Page (From Score & Response)
 document.getElementById("back-to-submit-from-score").onclick = function () {
     document.getElementById("score-container").style.display = "none";
@@ -396,11 +435,6 @@ document.getElementById("back-to-submit-from-response").onclick = function () {
 document.getElementById("restart-quiz-button").onclick = function () {
     document.getElementById("submit-container").style.display = "none";
     document.getElementById("welcome-container").style.display = "block";
-};
 
-/* Restart Quiz
-document.getElementById("restart-quiz-button").onclick = function () {
-    document.getElementById("submit-container").style.display = "none";
-    document.getElementById("welcome-container").style.display = "block";
+    document.querySelector("#start").style.display = "block"; // Show the start button again on restart
 };
-*/
