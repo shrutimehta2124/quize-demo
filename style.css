@@ -295,3 +295,44 @@ button:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
+#sidebar {
+    width: 200px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background-color: #ccc;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+#sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+#sidebar ul li {
+    padding: 10px;
+    margin: 5px 0;
+    text-align: center;
+    cursor: pointer;
+    background-color: grey;
+    border-radius: 5px;
+    color: white;
+}
+
+.current-question {
+    background-color:  orange !important;
+}
+
+.attempted-question {
+    background-color:  green !important;
+}
+
+.skipped-question {
+    background-color: red !important;
+}
+.time-up {
+    color: red;
+    text-decoration: line-through;
+}

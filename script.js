@@ -107,12 +107,13 @@ let skipped = 0;
 let timer;
 let timeRemaining = 10;
 let userResponses = [];
+let questionTimers = {}; // Store remaining time per question
 
 // Fisher-Yates Shuffle Algorithm
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1)); // Random index
-        [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
     }
 }
 
@@ -126,21 +127,26 @@ function startQuiz() {
     score = 0;
     skipped = 0;
     userResponses = [];
+    questionTimers = {}; // Reset question timers
 
     // Shuffle questions every time the quiz starts
     shuffleArray(questions);
 
+    setupSidebar();
     loadQuestion();
 }
 
 // Load Question
 function loadQuestion() {
     document.getElementById("current-question-number").textContent = currentQuestionIndex + 1;
-    if (currentQuestionIndex === 0) {
-        document.getElementById("total-questions-number").textContent = questions.length;
-    }
+    document.getElementById("total-questions-number").textContent = questions.length;
 
+    if (questionTimers[currentQuestionIndex] === undefined) {
+        questionTimers[currentQuestionIndex] = 10; // Default 10 seconds if first attempt
+    }
+    timeRemaining = questionTimers[currentQuestionIndex];
     document.getElementById("timer-seconds").textContent = timeRemaining;
+
     startTimer();
 
     const currentQuestion = questions[currentQuestionIndex];
@@ -159,16 +165,19 @@ function loadQuestion() {
     document.getElementById("next-button").style.display = "none";
     document.getElementById("next-button").disabled = true;
     document.getElementById("submit-button").style.display = "none";
+
+    updateSidebar();
 }
 
 // Start Timer
 function startTimer() {
-    timeRemaining = 10;
+    clearInterval(timer);
     timer = setInterval(() => {
-        timeRemaining--;
-        document.getElementById("timer-seconds").textContent = timeRemaining;
-
-        if (timeRemaining <= 0) {
+        if (timeRemaining > 0) {
+            timeRemaining--;
+            questionTimers[currentQuestionIndex] = timeRemaining;
+            document.getElementById("timer-seconds").textContent = timeRemaining;
+        } else {
             clearInterval(timer);
             handleSkip();
             moveToNextQuestion();
@@ -178,15 +187,18 @@ function startTimer() {
 
 // Handle Answer Selection
 function handleAnswer(selectedOption) {
+    if (timeRemaining <= 0) {
+        alert("Time is up! You cannot change the answer.");
+        return;
+    }
+
     clearInterval(timer);
 
     const options = document.querySelectorAll('#answer-options button');
-    options.forEach(option => {
-        option.style.backgroundColor = ''; // Reset all options to default color
-    });
+    options.forEach(option => option.style.backgroundColor = '');
 
     const selectedButton = Array.from(options).find(option => option.textContent === selectedOption);
-    selectedButton.style.backgroundColor = '#708090'; // Darken the clicked option
+    selectedButton.style.backgroundColor = '#708090';
 
     document.getElementById("next-button").style.display = "inline-block";
     document.getElementById("next-button").disabled = false;
@@ -194,35 +206,35 @@ function handleAnswer(selectedOption) {
     const correctAnswer = questions[currentQuestionIndex].answer;
     const isCorrect = selectedOption === correctAnswer;
 
-    userResponses.push({
+    userResponses[currentQuestionIndex] = {
         question: questions[currentQuestionIndex].question,
-        options: questions[currentQuestionIndex].options,
         selected: selectedOption,
         correct: correctAnswer,
         status: isCorrect ? "correct" : "wrong"
-    });
+    };
 
     if (isCorrect) {
         score++;
     }
+
+    updateSidebar();
 }
 
-// Handle Skip (when time is over)
+// Handle Skip
 function handleSkip() {
     skipped++;
-    document.getElementById("next-button").style.display = "inline-block";
-    document.getElementById("next-button").disabled = false;
 
-    userResponses.push({
+    userResponses[currentQuestionIndex] = {
         question: questions[currentQuestionIndex].question,
-        options: questions[currentQuestionIndex].options,
         selected: "Skipped",
         correct: questions[currentQuestionIndex].answer,
         status: "skipped"
-    });
+    };
+
+    updateSidebar();
 }
 
-// Move to Next Question (automatically called when time is up or next button is clicked)
+// Move to Next Question
 function moveToNextQuestion() {
     currentQuestionIndex++;
 
@@ -233,7 +245,7 @@ function moveToNextQuestion() {
     }
 }
 
-// Submit Quiz and Show Score
+// Submit Quiz
 document.getElementById("next-button").onclick = function () {
     if (currentQuestionIndex === questions.length) {
         showSubmitPage();
@@ -242,25 +254,61 @@ document.getElementById("next-button").onclick = function () {
     }
 };
 
-// Show Score Page
-function showSubmitPage() {
-    document.getElementById("quiz-container").style.display = "none";
-    document.getElementById("submit-container").style.display = "block";
-    document.getElementById("final-score").textContent = score;
-    document.getElementById("skipped-count").textContent = skipped;
-    document.getElementById("total-questions").textContent = questions.length;
+// Setup Sidebar
+function setupSidebar() {
+    const sidebar = document.getElementById("question-list");
+    sidebar.innerHTML = '';
 
-    let userAnswersHtml = '';
-    userResponses.forEach((response, index) => {
-        userAnswersHtml += `
-            <div class="answer">
-                <p><strong>Question ${index + 1}:</strong> ${response.question}</p>
-                <p>Your Answer: ${response.selected}</p>
-                <p>Status: ${response.status === "correct" ? "Correct" : (response.status === "skipped" ? "Skipped" : "Wrong")}</p>
-            </div>`;
+    questions.forEach((_, index) => {
+        const li = document.createElement("li");
+        li.textContent = `Question ${index + 1}`;
+        li.setAttribute("data-index", index);
+        li.classList.add("sidebar-item");
+
+        li.onclick = function () {
+            if (questionTimers[index] > 0) {
+                currentQuestionIndex = index;
+                loadQuestion();
+            } else {
+                alert("Time for this question has expired. You cannot change your answer.");
+            }
+        };
+
+        sidebar.appendChild(li);
     });
-    document.getElementById("user-answers").innerHTML = userAnswersHtml;
+
+    updateSidebar();
 }
+
+// Update Sidebar
+function updateSidebar() {
+    document.querySelectorAll(".sidebar-item").forEach((item, index) => {
+        item.className = "sidebar-item";
+
+        if (index === currentQuestionIndex) {
+            item.classList.add("current-question");
+        } else if (userResponses[index]?.status === "correct" || userResponses[index]?.status === "wrong") {
+            item.classList.add("attempted-question");
+        } else if (userResponses[index]?.status === "skipped") {
+            item.classList.add("skipped-question");
+        }
+    });
+}
+
+// Show Score Page
+document.getElementById("view-score-button").onclick = function () {
+    document.getElementById("submit-container").style.display = "none";
+    document.getElementById("score-container").style.display = "block";
+
+    const totalQuestions = questions.length;
+    const attemptedQuestions = totalQuestions - skipped;
+
+    document.getElementById("score").innerHTML = `
+        <p>Your Score: ${score} / ${totalQuestions}</p>
+        <p>Questions Attempted: ${attemptedQuestions}</p>
+        <p>Questions Skipped: ${skipped}</p>
+    `;
+};
 
 // Show Submit Page
 function showSubmitPage() {
@@ -288,46 +336,50 @@ document.getElementById("view-response-button").onclick = function () {
     document.getElementById("submit-container").style.display = "none";
     document.getElementById("response-container").style.display = "block";
     
-    console.log(userResponses);
-    
     const resultList = document.getElementById("response-list");
     resultList.innerHTML = ""; // Clear previous responses
     
-    userResponses.forEach(response => {
+    userResponses.forEach((response, index) => {
         const li = document.createElement("li");
-    
-        // Add the question text and options for each response
-        li.innerHTML = `<strong>${response.question}</strong><br>`;
-        response.options.forEach(option => {
-            let span = document.createElement("span");
-            span.textContent = option;
-            span.classList.add("option");
-    
-            let icon = document.createElement("span");
-    
-            if (option === response.selected) {
-                span.classList.add(option === response.correct ? "correct" : "incorrect");
-                icon.innerHTML = option === response.correct ? "✅" : "❌";
-            }
-    
-            if (option === response.correct) {
-                span.classList.add("correct-answer");
-                if (response.selected !== response.correct) {
-                    icon.innerHTML = "✅";
+        li.innerHTML = `<strong>Question ${index + 1}: ${response.question}</strong><br>`;
+
+        // Ensure 'options' are available
+        if (questions[index] && questions[index].options) {
+            questions[index].options.forEach(option => {
+                let span = document.createElement("span");
+                span.textContent = option;
+                span.classList.add("option");
+
+                let icon = document.createElement("span");
+
+                if (option === response.selected) {
+                    span.classList.add(option === response.correct ? "correct" : "incorrect");
+                    icon.innerHTML = option === response.correct ? "✅" : "❌";
                 }
-            }
-            li.appendChild(span);
-            li.appendChild(icon);
-            li.appendChild(document.createElement("br"));
-        });
-    
+
+                if (option === response.correct) {
+                    span.classList.add("correct-answer");
+                    if (response.selected !== response.correct) {
+                        icon.innerHTML = "✅";
+                    }
+                }
+
+                li.appendChild(span);
+                li.appendChild(icon);
+                li.appendChild(document.createElement("br"));
+            });
+        } else {
+            li.innerHTML += "<p style='color: red;'>Error: No options available.</p>";
+        }
+
         if (response.selected === "Skipped") {
             li.innerHTML += `<span class="skipped">⚠️ Skipped</span>`;
         }
-    
+
         resultList.appendChild(li);
     });
 };
+
 
 // Back to Submit Page (From Score & Response)
 document.getElementById("back-to-submit-from-score").onclick = function () {
@@ -345,3 +397,10 @@ document.getElementById("restart-quiz-button").onclick = function () {
     document.getElementById("submit-container").style.display = "none";
     document.getElementById("welcome-container").style.display = "block";
 };
+
+/* Restart Quiz
+document.getElementById("restart-quiz-button").onclick = function () {
+    document.getElementById("submit-container").style.display = "none";
+    document.getElementById("welcome-container").style.display = "block";
+};
+*/
