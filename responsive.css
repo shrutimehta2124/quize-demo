@@ -1,15 +1,17 @@
+/* Responsive Design */
 @media (max-width: 768px) {
-    body {
-        padding: 10px; /* Less padding on smaller screens */
+    .welcome-container, .quiz-container {
+        width: 90%;
+        padding: 30px;
     }
 
-    .quiz-container {
-        width: 90%;
+    #sidebar {
+        width: 180px;
     }
 
-    .welcome-container {
-        font-size: 1.2rem;
-        width: 90%;
+    #timer-container {
+        flex-direction: column;
+        gap: 10px;
     }
 
     #question {
@@ -20,39 +22,12 @@
         font-size: 1.1rem;
     }
 
-    #next-button, #submit-button {
-        font-size: 1.2rem;
-    }
-
-    #response-container {
-        max-width: 90%; /* Increase container width for small screens */
-    }
-
-    #response-list li {
-        padding: 12px;
-    }
-
-    #score-container p {
-        font-size: 1.2rem;
-    }
-}
-
-@media (max-width: 480px) {
-    #timer {
-        font-size: 1.8rem; /* Smaller timer for mobile */
-    }
-
-    #question {
-        font-size: 1.4rem; /* Smaller question font */
-    }
-
-    #answer-options button {
-        font-size: 1rem;
-        padding: 12px; /* Adjust button padding */
-    }
-
-    #next-button, #submit-button {
+    button {
         font-size: 1.1rem;
-        padding: 12px; /* Adjust padding for smaller buttons */
+    }
+
+    #camera-feed {
+        width: 120px;
+        height: 120px;
     }
 }
