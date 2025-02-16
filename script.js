@@ -120,6 +120,8 @@ function shuffleArray(array) {
 
 // Function to start the camera
 function startCamera() {
+    document.getElementById("videoElement").style.display = "block";
+
     navigator.mediaDevices
         .getUserMedia({ video: true })
         .then((userStream) => {
@@ -173,8 +175,16 @@ function startQuiz() {
         return;
     }
 
+    // Hide the welcome container and show the quiz container
     document.getElementById("welcome-container").style.display = "none";
     document.getElementById("quiz-container").style.display = "block";
+    document.getElementById("quiz-container").classList.add('show'); // Show quiz container
+
+    // Show the sidebar when quiz starts
+    document.getElementById('sidebar').classList.add('show');
+
+    document.getElementById("sidebar").style.display = "block"; // Show sidebar
+
     currentQuestionIndex = 0;
     score = 0;
     skipped = 0;
@@ -187,6 +197,8 @@ function startQuiz() {
     setupSidebar();
     loadQuestion();
 }
+
+
 // Load Question
 function loadQuestion() {
     document.getElementById("current-question-number").textContent = currentQuestionIndex + 1;
@@ -228,6 +240,13 @@ function startTimer() {
             timeRemaining--;
             questionTimers[currentQuestionIndex] = timeRemaining;
             document.getElementById("timer-seconds").textContent = timeRemaining;
+
+            // Change the color of the timer when time reaches 4 seconds
+            if (timeRemaining <= 4) {
+                document.getElementById("timer").style.color = "red"; // Red color for warning
+            } else {
+                document.getElementById("timer").style.color = "green"; // Green color for normal time
+            }
         } else {
             clearInterval(timer);
             handleSkip();
@@ -235,6 +254,7 @@ function startTimer() {
         }
     }, 1000);
 }
+
 
 // Handle Answer Selection
 function handleAnswer(selectedOption) {
@@ -365,12 +385,19 @@ document.getElementById("view-score-button").onclick = function () {
 function showSubmitPage() {
     stopCamera(); // Stop the camera when the quiz is submitted
 
-    document.getElementById("video-container").style.display = "none"; // Hide camera
+    // Hide camera and quiz containers
+    document.getElementById("video-container").style.display = "none";
     document.getElementById("quiz-container").style.display = "none";
+
+    // Hide the sidebar when the quiz is submitted
+    document.getElementById('sidebar').style.display = "none"; // Hides the sidebar
+
+    // Show the submit container (score page)
     document.getElementById("submit-container").style.display = "block";
     
     document.querySelector("#start").style.display = "none"; // Ensure start camera button stays hidden
 }
+
 // Show Responses
 document.getElementById("view-response-button").onclick = function () {
     document.getElementById("submit-container").style.display = "none";

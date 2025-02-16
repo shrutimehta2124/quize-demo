@@ -7,7 +7,7 @@
 
 body {
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #ffffff, #1abc9c); /* White to teal gradient */
+    background: linear-gradient(135deg, #ffffff, #1abc9c);
     color: #333;
     padding: 20px;
     text-align: center;
@@ -16,6 +16,8 @@ body {
     justify-content: center;
     align-items: center;
     transition: all 0.5s ease;
+    flex-direction: column;
+    height: 100%;
 }
 
 /* Welcome Page */
@@ -24,35 +26,44 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100%;
     text-align: center;
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 50px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease-in-out;
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    max-width: 600px;
+    width: 100%;
+    margin-bottom: 30px;
 }
 
 .welcome-container h1 {
-    font-size: 3.5rem;
-    margin-bottom: 20px;
-    color: #1abc9c; /* Teal color */
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    color: #1abc9c;
     font-weight: 700;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .welcome-container p {
-    font-size: 1.4rem;
-    margin-bottom: 40px;
-    color: #666;
-    line-height: 1.6;
-    font-weight: 500;
+    font-size: 1rem;
+    margin-bottom: 20px;
+    color: #555;
+    line-height: 1.5;
+    max-width: 90%; /* Added max width to keep text from stretching */
 }
 
-#start-quiz-button {
-    padding: 15px 30px;
-    font-size: 1.3rem;
-    background-color: #1abc9c; /* Teal color */
+/* Button container */
+.button-container {
+    display: flex;
+    gap: 15px; /* Slightly larger gap for button spacing */
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* Buttons */
+button {
+    padding: 12px 24px;
+    font-size: 1rem;
+    background-color: #1abc9c;
     color: white;
     border: none;
     border-radius: 8px;
@@ -62,8 +73,8 @@ body {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-#start-quiz-button:hover {
-    background-color: #16a085; /* Darker teal */
+button:hover {
+    background-color: #16a085;
     transform: translateY(-3px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
@@ -72,13 +83,12 @@ body {
 .quiz-container {
     display: none;
     background-color: #fff;
-    padding: 40px;
-    border-radius: 10px;
+    padding: 35px;
+    border-radius: 12px;
     box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-    width: 70%;
-    max-width: 800px;
+    width: 100%;
+    max-width: 750px;
     margin: auto;
-    transition: transform 0.3s ease-in-out;
 }
 
 /* Timer and Question Number Styles */
@@ -86,29 +96,27 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 #timer {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #1abc9c; /* Teal color */
+    font-size: 1.5rem;
+    color: #1abc9c;
 }
 
 #question-number {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     color: #333;
-    font-weight: 600;
 }
 
-/* Question Container */
+/* Question Section */
 #question-container {
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 }
 
 #question {
-    font-size: 2rem;
-    margin-bottom: 20px;
+    font-size: 1.6rem;
+    margin-bottom: 15px;
     font-weight: 600;
     color: #333;
     text-align: left;
@@ -118,42 +126,86 @@ body {
 #answer-options {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 15px; /* Added more space between the options */
 }
 
 #answer-options button {
-    padding: 15px;
-    font-size: 1.3rem;
-    background-color: #f0f0f0;
+    padding: 14px;
+    font-size: 1rem;
+    background-color: #f8f9fa;
     color: #333;
     border: 1px solid #ccc;
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
-    font-weight: 500;
 }
 
 #answer-options button:hover {
-    background-color: #ddd;
+    background-color: #e0e0e0;
     transform: translateY(-3px);
 }
 
-/* Navigation Buttons */
-#next-button, #submit-button {
-    padding: 15px 30px;
-    font-size: 1.3rem;
-    background-color: #e74c3c; /* Coral color */
+/* Sidebar */
+#sidebar {
+    width: 220px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background-color: #2c3e50;
+    padding: 15px;
+    overflow-y: auto;
     color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
     display: none;
-    transition: background-color 0.3s, transform 0.3s;
 }
 
-#next-button:hover, #submit-button:hover {
-    background-color: #c0392b; /* Darker coral */
-    transform: translateY(-3px);
+#sidebar.show {
+    display: block;
+}
+
+#sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+#sidebar ul li {
+    padding: 12px;
+    margin: 5px 0;
+    text-align: center;
+    cursor: pointer;
+    background-color: #34495e;
+    border-radius: 6px;
+}
+
+#sidebar ul li:hover {
+    background-color: #1abc9c;
+}
+
+/* Question Status */
+.current-question {
+    background-color: orange !important;
+}
+
+.attempted-question {
+    background-color: green !important;
+}
+
+.skipped-question {
+    background-color: red !important;
+}
+
+/* Camera Feed */
+#videoElement {
+    width: 200px;
+    height: 200px;
+    border-radius: 10px;
+    border: 3px solid #1abc9c;
+    background-color: black;
+  /*  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);*/
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: none;
 }
 
 /* Submit Page */
@@ -174,14 +226,14 @@ body {
 #submit-container h2 {
     font-size: 3.5rem;
     margin-bottom: 20px;
-    color: #1abc9c; /* Teal color */
+    color: #1abc9c;
     font-weight: 700;
 }
 
 #submit-container button {
     padding: 15px 30px;
     font-size: 1.3rem;
-    background-color: #e74c3c; /* Coral color */
+    background-color: #e74c3c;
     color: white;
     border: none;
     border-radius: 8px;
@@ -192,7 +244,7 @@ body {
 }
 
 #submit-container button:hover {
-    background-color: #c0392b; /* Darker coral */
+    background-color: #c0392b;
     transform: translateY(-3px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
@@ -215,7 +267,7 @@ body {
 #score-container h2 {
     font-size: 3.5rem;
     margin-bottom: 20px;
-    color: #1abc9c; /* Teal color */
+    color: #1abc9c;
     font-weight: 700;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
@@ -245,7 +297,7 @@ body {
 #response-container h2 {
     font-size: 2rem;
     margin-bottom: 10px;
-    color: #1abc9c; /* Teal color */
+    color: #1abc9c;
     font-weight: 700;
 }
 
@@ -280,7 +332,7 @@ body {
 button {
     padding: 15px 30px;
     font-size: 1.3rem;
-    background-color: #1abc9c; /* Teal color */
+    background-color: #1abc9c;
     color: white;
     border: none;
     border-radius: 8px;
@@ -291,59 +343,7 @@ button {
 }
 
 button:hover {
-    background-color: #16a085; /* Darker teal */
+    background-color: #16a085;
     transform: translateY(-3px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-}
-#sidebar {
-    width: 200px;
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100%;
-    background-color: #ccc;
-    padding: 10px;
-    overflow-y: auto;
-}
-
-#sidebar ul {
-    list-style: none;
-    padding: 0;
-}
-
-#sidebar ul li {
-    padding: 10px;
-    margin: 5px 0;
-    text-align: center;
-    cursor: pointer;
-    background-color: grey;
-    border-radius: 5px;
-    color: white;
-}
-
-.current-question {
-    background-color:  orange !important;
-}
-
-.attempted-question {
-    background-color:  green !important;
-}
-
-.skipped-question {
-    background-color: red !important;
-}
-.time-up {
-    color: red;
-    text-decoration: line-through;
-}
-#camera-feed {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 150px;
-    height: 150px;
-    border-radius: 8px;
-    border: 2px solid #ccc;
-    background-color: black;
-    z-index: 1000;
 }

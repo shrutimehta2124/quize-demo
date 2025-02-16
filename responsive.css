@@ -1,32 +1,28 @@
+
 /* Responsive Design */
 @media (max-width: 768px) {
-    .welcome-container, .quiz-container {
-        width: 90%;
-        padding: 30px;
+    .welcome-container h1 {
+        font-size: 2rem;
     }
 
-    #sidebar {
-        width: 180px;
+    .welcome-container p {
+        font-size: 0.9rem;
     }
 
-    #timer-container {
+    .quiz-container {
+        padding: 20px;
+    }
+
+    #question-container {
         flex-direction: column;
-        gap: 10px;
-    }
-
-    #question {
-        font-size: 1.6rem;
     }
 
     #answer-options button {
-        font-size: 1.1rem;
+        font-size: 0.9rem;
     }
 
-    button {
-        font-size: 1.1rem;
-    }
-
-    #camera-feed {
+    /* Responsive camera feed */
+    #videoElement {
         width: 120px;
         height: 120px;
     }
