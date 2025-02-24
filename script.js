@@ -101,9 +101,12 @@ const questions = [
     }
 ];
 
+let skippedQuestions = 0;
 let currentQuestionIndex = 0;
 let score = 0;
 let skipped = 0;
+let totalQuestions = 20; // Adjust according to your quiz length
+let attemptedQuestions = 0;
 let timer;
 let timeRemaining = 10;
 let userResponses = [];
@@ -311,19 +314,26 @@ document.getElementById("skipped-button").addEventListener("click", function() {
 });
 // Handle Skip
 function handleSkip() {
-    skipped++;  // Increment skipped count
-
-    // Record the skipped question
+    skipped++;  // Increment skipped count only
     userResponses[currentQuestionIndex] = {
         question: questions[currentQuestionIndex].question,
         selected: "Skipped",  // Mark as skipped
-        correct: questions[currentQuestionIndex].answer,  // Store the correct answer for reference
+        correct: questions[currentQuestionIndex].answer,  // Correct answer for reference
         status: "skipped"  // Set status as skipped
     };
+
+    // If it's the last question, show the Submit Quiz button
+    if (currentQuestionIndex === questions.length - 1) {
+        document.getElementById("next-button").textContent = 'Submit Quiz';
+        document.getElementById("next-button").disabled = false; // Enable the submit button
+    }
 
     // Update the sidebar with skipped question status
     updateSidebar();
 }
+
+
+
 // Skip Button Click Event
 document.getElementById("skipped-button").addEventListener("click", function() {
     if (timeRemaining > 0) {
@@ -332,18 +342,23 @@ document.getElementById("skipped-button").addEventListener("click", function() {
         alert("You cannot skip after time runs out.");
     }
 });
-//move to next question function
 function moveToNextQuestion() {
     currentQuestionIndex++;  // Move to next question
     if (currentQuestionIndex < questions.length) {
         loadQuestion();  // Load next question
     } else {
-        document.getElementById("next-button").textContent = 'Submit Quiz'; // End of quiz
-        // Submit the quiz when all questions are answered/skipped
-                // Hide the Skip button when it's the last question
-                document.getElementById("skipped-button").style.display = "none";
+        // If it's the last question, show the Submit Quiz button
+        document.getElementById("next-button").textContent = 'Submit Quiz'; // Change button text to 'Submit Quiz'
+        
+        // Enable the Submit Quiz button if it's the last question
+        document.getElementById("next-button").disabled = false;
+        
+        // Hide the Skip button when it's the last question
+        document.getElementById("skipped-button").style.display = "none";
     }
 }
+
+
 // Submit Quiz
 document.getElementById("next-button").onclick = function () {
     if (currentQuestionIndex === questions.length) {
@@ -406,15 +421,45 @@ document.getElementById("view-score-button").onclick = function () {
     document.getElementById("submit-container").style.display = "none";
     document.getElementById("score-container").style.display = "block";
 
-    const totalQuestions = questions.length;
+    /*const totalQuestions = questions.length;
     const attemptedQuestions = totalQuestions - skipped;
 
     document.getElementById("score").innerHTML = `
         <p>Your Score: ${score} / ${totalQuestions}</p>
         <p>Questions Attempted: ${attemptedQuestions}</p>
         <p>Questions Skipped: ${skipped}</p>
-    `;
+    `;*/
 };
+
+function submitQuiz() {
+    let score = 0;
+    let attempted = 0;
+    let skipped = 0;
+
+    // Assuming 'questions' is an array of question objects, and 'userResponses' is an array of user's answers/status
+    for (let i = 0; i < questions.length; i++) {
+        const userResponse = userResponses[i];
+
+        // Check if the user skipped the question
+        if (userResponse.status === 'skipped') {
+            skipped++;
+        }
+        // Check if the user answered the question (correct or incorrect)
+        else if (userResponse.selected !== undefined && userResponse.selected !== "Skipped") {
+            attempted++;
+            // If the answer is correct, increase the score
+            if (userResponse.selected === questions[i].answer) {
+                score++;
+            }
+        }
+    }
+
+    // Display the results
+    document.getElementById("score").innerText = `Your Score: ${score} / ${questions.length}`;
+    document.getElementById("attempted").innerText = `Questions Attempted: ${attempted}`;
+    document.getElementById("skipped").innerText = `Questions Skipped: ${skipped}`;
+}
+
 
 function showSubmitPage() {
     stopCamera(); // Stop the camera when the quiz is submitted
@@ -428,7 +473,10 @@ function showSubmitPage() {
 
     // Show the submit container (score page)
     document.getElementById("submit-container").style.display = "block";
-    
+
+    // Calculate and display the score, attempted, and skipped questions
+    submitQuiz(); // Call the submitQuiz function to update the counts
+
     document.querySelector("#start").style.display = "none"; // Ensure start camera button stays hidden
 }
 
@@ -499,3 +547,9 @@ document.getElementById("restart-quiz-button").onclick = function () {
 
     document.querySelector("#start").style.display = "block"; // Show the start button again on restart
 };
+attemptedQuestions = totalQuestions - skippedQuestions;
+skippedQuestions = totalQuestions - attemptedQuestions;
+attemptedQuestions = Math.max(0, attemptedQuestions);
+skippedQuestions = Math.max(0, skippedQuestions);
+console.log("Attempted: ", attemptedQuestions);
+console.log("Skipped: ", skippedQuestions);

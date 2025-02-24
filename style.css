@@ -279,7 +279,19 @@ button:hover {
     line-height: 1.6;
     font-weight: 500;
 }
-
+#attempted
+{font-size: 1.4rem;
+    margin-bottom: 40px;
+    color: #666;
+    line-height: 1.6;
+    font-weight: 500;}
+#skipped{
+    font-size: 1.4rem;
+    margin-bottom: 40px;
+    color: #666;
+    line-height: 1.6;
+    font-weight: 500;   
+}
 /* Response Page */
 #response-container {
     text-align: center;
