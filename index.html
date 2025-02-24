@@ -59,8 +59,9 @@
         </div>
     
         <!-- Buttons -->
-        <button id="next-button" style="display:none;">Next Question</button>
-        <button id="submit-button" style="display:none;">Submit Quiz</button>
+      <button id="next-button" style="display:none;" disabled>Next Question</button>
+      <button id="skipped-button" style="display:none;">Skip Question</button>
+      <button id="submit-button" style="display:none;">Submit Quiz</button>
     </div>
 
     <!-- Submit Page -->
@@ -84,6 +85,16 @@
         <ul id="response-list"></ul> <!-- Changed to <ul> for better response listing -->
         <button id="back-to-submit-from-response">Back</button>
     </div>
+    <div id="notification" style="
+    display: none;
+    background-color: #ffcccc;
+    color: #990000;
+    padding: 10px;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;"></div>
 
     <script src="script.js"></script>
 </body>

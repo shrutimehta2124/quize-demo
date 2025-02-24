@@ -197,41 +197,45 @@ function startQuiz() {
     setupSidebar();
     loadQuestion();
 }
-
-
-// Load Question
+//load question 
 function loadQuestion() {
-    document.getElementById("current-question-number").textContent = currentQuestionIndex + 1;
-    document.getElementById("total-questions-number").textContent = questions.length;
+    // Ensure we are working with the correct currentQuestionIndex
+    if (currentQuestionIndex < questions.length) {
+        document.getElementById("current-question-number").textContent = currentQuestionIndex + 1;
+        document.getElementById("total-questions-number").textContent = questions.length;
 
-    if (questionTimers[currentQuestionIndex] === undefined) {
-        questionTimers[currentQuestionIndex] = 10; // Default 10 seconds if first attempt
+        if (questionTimers[currentQuestionIndex] === undefined) {
+            questionTimers[currentQuestionIndex] = 10; // Default 10 seconds if first attempt
+        }
+        timeRemaining = questionTimers[currentQuestionIndex];
+        document.getElementById("timer-seconds").textContent = timeRemaining;
+
+        startTimer();
+
+        const currentQuestion = questions[currentQuestionIndex];
+        document.getElementById("question").textContent = currentQuestion.question;
+
+        const answerOptions = document.getElementById("answer-options");
+        answerOptions.innerHTML = ''; // Clear existing options
+
+        currentQuestion.options.forEach(option => {
+            const button = document.createElement("button");
+            button.textContent = option;
+            button.onclick = () => handleAnswer(option);
+            answerOptions.appendChild(button);
+        });
+
+        // Reset and disable Next button at the start of each question
+        document.getElementById("next-button").disabled = true;
+        document.getElementById("next-button").style.backgroundColor = "#dcdcdc"; // Disabled style
+
+        // Display Skip and hide other buttons
+        document.getElementById("skipped-button").style.display = "inline-block"; // Show skip button
+        document.getElementById("next-button").style.display = "inline-block"; // Show next button
+        document.getElementById("submit-button").style.display = "none"; // Hide submit button
+        updateSidebar();
     }
-    timeRemaining = questionTimers[currentQuestionIndex];
-    document.getElementById("timer-seconds").textContent = timeRemaining;
-
-    startTimer();
-
-    const currentQuestion = questions[currentQuestionIndex];
-    document.getElementById("question").textContent = currentQuestion.question;
-
-    const answerOptions = document.getElementById("answer-options");
-    answerOptions.innerHTML = '';
-
-    currentQuestion.options.forEach(option => {
-        const button = document.createElement("button");
-        button.textContent = option;
-        button.onclick = () => handleAnswer(option);
-        answerOptions.appendChild(button);
-    });
-
-    document.getElementById("next-button").style.display = "none";
-    document.getElementById("next-button").disabled = true;
-    document.getElementById("submit-button").style.display = "none";
-
-    updateSidebar();
 }
-
 // Start Timer
 function startTimer() {
     clearInterval(timer);
@@ -248,18 +252,22 @@ function startTimer() {
                 document.getElementById("timer").style.color = "green"; // Green color for normal time
             }
         } else {
-            clearInterval(timer);
-            handleSkip();
-            moveToNextQuestion();
+            clearInterval(timer);  // Clear timer when it reaches zero
+            handleSkip();          // Handle skip when time runs out
+            moveToNextQuestion();  // Move to the next question
         }
     }, 1000);
 }
 
-
 // Handle Answer Selection
 function handleAnswer(selectedOption) {
     if (timeRemaining <= 0) {
-        alert("Time is up! You cannot change the answer.");
+        const notification = document.getElementById("notification");
+        notification.textContent = "Time's up! You can't access or answer this question anymore.";
+        notification.style.display = "block";
+        setTimeout(() => {
+            notification.style.display = "none";
+        }, 3000);
         return;
     }
 
@@ -271,14 +279,21 @@ function handleAnswer(selectedOption) {
     const selectedButton = Array.from(options).find(option => option.textContent === selectedOption);
     selectedButton.style.backgroundColor = '#708090';
 
-    document.getElementById("next-button").style.display = "inline-block";
+    // Enable the Next Button
     document.getElementById("next-button").disabled = false;
+    document.getElementById("next-button").style.backgroundColor = "#1abc9c"; // Normal background color when enabled
 
-    const correctAnswer = questions[currentQuestionIndex].answer;
-    const isCorrect = selectedOption === correctAnswer;
+    const currentQuestion = questions[currentQuestionIndex];
+    const correctAnswer = currentQuestion.answer; // Full answer (e.g. "B) Hyper Text Markup Language")
+    const selectedAnswerLetter = selectedOption.split(" ")[0]; // Get the letter (e.g. "B")
+
+    // Extract correct answer's letter
+    const correctAnswerLetter = correctAnswer.split(" ")[0]; // e.g. "B"
+
+    const isCorrect = selectedAnswerLetter === correctAnswerLetter;
 
     userResponses[currentQuestionIndex] = {
-        question: questions[currentQuestionIndex].question,
+        question: currentQuestion.question,
         selected: selectedOption,
         correct: correctAnswer,
         status: isCorrect ? "correct" : "wrong"
@@ -290,32 +305,45 @@ function handleAnswer(selectedOption) {
 
     updateSidebar();
 }
-
+document.getElementById("skipped-button").addEventListener("click", function() {
+    handleSkip();  // Call handleSkip when Skip button is clicked
+    moveToNextQuestion();  // Move to the next question after skipping
+});
 // Handle Skip
 function handleSkip() {
-    skipped++;
+    skipped++;  // Increment skipped count
 
+    // Record the skipped question
     userResponses[currentQuestionIndex] = {
         question: questions[currentQuestionIndex].question,
-        selected: "Skipped",
-        correct: questions[currentQuestionIndex].answer,
-        status: "skipped"
+        selected: "Skipped",  // Mark as skipped
+        correct: questions[currentQuestionIndex].answer,  // Store the correct answer for reference
+        status: "skipped"  // Set status as skipped
     };
 
+    // Update the sidebar with skipped question status
     updateSidebar();
 }
-
-// Move to Next Question
-function moveToNextQuestion() {
-    currentQuestionIndex++;
-
-    if (currentQuestionIndex < questions.length) {
-        loadQuestion();
+// Skip Button Click Event
+document.getElementById("skipped-button").addEventListener("click", function() {
+    if (timeRemaining > 0) {
+        handleSkip();
     } else {
-        document.getElementById("next-button").textContent = 'Submit Quiz';
+        alert("You cannot skip after time runs out.");
+    }
+});
+//move to next question function
+function moveToNextQuestion() {
+    currentQuestionIndex++;  // Move to next question
+    if (currentQuestionIndex < questions.length) {
+        loadQuestion();  // Load next question
+    } else {
+        document.getElementById("next-button").textContent = 'Submit Quiz'; // End of quiz
+        // Submit the quiz when all questions are answered/skipped
+                // Hide the Skip button when it's the last question
+                document.getElementById("skipped-button").style.display = "none";
     }
 }
-
 // Submit Quiz
 document.getElementById("next-button").onclick = function () {
     if (currentQuestionIndex === questions.length) {
@@ -342,9 +370,15 @@ function setupSidebar() {
                 currentQuestionIndex = index;
                 loadQuestion();
             } else {
-                alert("Time for this question has expired. You cannot change your answer.");
+                const notification = document.getElementById("notification");
+                notification.textContent = "Time's up! You can't access or answer this question anymore.";
+                notification.style.display = "block";
+                setTimeout(() => {
+                    notification.style.display = "none";
+                }, 3000);
             }
         };
+        
 
         sidebar.appendChild(li);
     });
