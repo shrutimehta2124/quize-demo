@@ -200,7 +200,7 @@ function startQuiz() {
     setupSidebar();
     loadQuestion();
 }
-//load question 
+//load question
 function loadQuestion() {
     // Ensure we are working with the correct currentQuestionIndex
     if (currentQuestionIndex < questions.length) {
@@ -228,6 +228,16 @@ function loadQuestion() {
             answerOptions.appendChild(button);
         });
 
+        // Apply background color for previously selected answer
+        if (userResponses[currentQuestionIndex]) {
+            const selectedAnswer = userResponses[currentQuestionIndex].selected;
+            const options = document.querySelectorAll('#answer-options button');
+            const selectedButton = Array.from(options).find(option => option.textContent === selectedAnswer);
+            if (selectedButton) {
+                selectedButton.style.backgroundColor = '#708090'; // Highlight selected answer
+            }
+        }
+
         // Reset and disable Next button at the start of each question
         document.getElementById("next-button").disabled = true;
         document.getElementById("next-button").style.backgroundColor = "#dcdcdc"; // Disabled style
@@ -239,6 +249,7 @@ function loadQuestion() {
         updateSidebar();
     }
 }
+
 // Start Timer
 function startTimer() {
     clearInterval(timer);
@@ -276,11 +287,15 @@ function handleAnswer(selectedOption) {
 
     clearInterval(timer);
 
+    // Reset the background color of all options before highlighting the selected one
     const options = document.querySelectorAll('#answer-options button');
-    options.forEach(option => option.style.backgroundColor = '');
+    options.forEach(option => {
+        option.style.backgroundColor = ''; // Clear background color from all options
+    });
 
+    // Find the selected button and highlight it
     const selectedButton = Array.from(options).find(option => option.textContent === selectedOption);
-    selectedButton.style.backgroundColor = '#708090';
+    selectedButton.style.backgroundColor = '#708090'; // Apply custom background color to selected option
 
     // Enable the Next Button
     document.getElementById("next-button").disabled = false;
@@ -308,6 +323,8 @@ function handleAnswer(selectedOption) {
 
     updateSidebar();
 }
+
+
 document.getElementById("skipped-button").addEventListener("click", function() {
     handleSkip();  // Call handleSkip when Skip button is clicked
     moveToNextQuestion();  // Move to the next question after skipping
@@ -349,10 +366,10 @@ function moveToNextQuestion() {
     } else {
         // If it's the last question, show the Submit Quiz button
         document.getElementById("next-button").textContent = 'Submit Quiz'; // Change button text to 'Submit Quiz'
-        
+       
         // Enable the Submit Quiz button if it's the last question
         document.getElementById("next-button").disabled = false;
-        
+       
         // Hide the Skip button when it's the last question
         document.getElementById("skipped-button").style.display = "none";
     }
@@ -393,7 +410,7 @@ function setupSidebar() {
                 }, 3000);
             }
         };
-        
+       
 
         sidebar.appendChild(li);
     });
@@ -484,10 +501,10 @@ function showSubmitPage() {
 document.getElementById("view-response-button").onclick = function () {
     document.getElementById("submit-container").style.display = "none";
     document.getElementById("response-container").style.display = "block";
-    
+   
     const resultList = document.getElementById("response-list");
     resultList.innerHTML = ""; // Clear previous responses
-    
+   
     userResponses.forEach((response, index) => {
         const li = document.createElement("li");
         li.innerHTML = `<strong>Question ${index + 1}: ${response.question}</strong><br>`;
